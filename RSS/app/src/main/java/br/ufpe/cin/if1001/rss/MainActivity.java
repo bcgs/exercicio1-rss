@@ -1,8 +1,12 @@
 package br.ufpe.cin.if1001.rss;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +42,23 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //use ListView ao invés de TextView - deixe o ID no layout XML com o mesmo nome conteudoRSS
         //isso vai exigir o processamento do XML baixado da internet usando o ParserRSS
         conteudoRSS = findViewById(R.id.items);
+
+        // Ao clicarmos em um ítem navegaremos pelo link disponibilizado pelo mesmo
+        conteudoRSS.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ItemRSS item = (ItemRSS) adapter.getItem(position);
+                Intent intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(item.getLink())
+                );
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
