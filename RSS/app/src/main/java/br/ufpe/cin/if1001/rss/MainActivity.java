@@ -2,13 +2,16 @@ package br.ufpe.cin.if1001.rss;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -22,9 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity {
+    // Deixou de ser constante pois agora pode ser modificado nas configurações
+    private String rss_feed;
 
-    //ao fazer envio da resolucao, use este link no seu codigo!
-    private final String RSS_FEED = "http://leopoldomt.com/if1001/g1brasil.xml";
+    // Chave utilizada no SharedPreferences
+    public static final String RSSFEED_KEY = "rssfeed";
 
     //OUTROS LINKS PARA TESTAR...
     //http://rss.cnn.com/rss/edition.rss
@@ -43,8 +48,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //use ListView ao invés de TextView - deixe o ID no layout XML com o mesmo nome conteudoRSS
-        //isso vai exigir o processamento do XML baixado da internet usando o ParserRSS
         conteudoRSS = findViewById(R.id.items);
 
         // Ao clicarmos em um ítem navegaremos pelo link disponibilizado pelo mesmo
@@ -64,7 +67,25 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        new CarregaRSStask().execute(RSS_FEED);
+
+        // Sempre atualizando a ListView através do link disponibilizado
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        rss_feed = prefs.getString(RSSFEED_KEY, getString(R.string.rss_feed_default));
+        new CarregaRSStask().execute(rss_feed);
+    }
+
+    // Menu de opções na barra de tarefas
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    // Ao selecionar a opção do menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(this, PreferenciasActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -84,7 +105,6 @@ public class MainActivity extends Activity {
 
         @Override
         protected List<ItemRSS> doInBackground(String... params) {
-            // Preparando para receber um List<ItemRss> da class ParserRss
             List<ItemRSS> itemList = new ArrayList<>();
             try {
                 itemList = ParserRSS.parse(getRssFeed(params[0]));
@@ -94,12 +114,12 @@ public class MainActivity extends Activity {
             return itemList;
         }
 
+        // onPostExecute passa a receber uma List<ItemRSS>
         @Override
         protected void onPostExecute(List<ItemRSS> feed) {
             Toast.makeText(getApplicationContext(), "terminando...", Toast.LENGTH_SHORT).show();
 
-            //ajuste para usar uma ListView
-            //o layout XML a ser utilizado esta em res/layout/itemlista.xml
+            // Chamando função responsável por listar o feed
             displayFeed(feed);
         }
     }
