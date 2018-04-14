@@ -1,4 +1,4 @@
-package br.ufpe.cin.if1001.rss;
+package br.ufpe.cin.if1001.rss.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,6 +23,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.ufpe.cin.if1001.rss.R;
+import br.ufpe.cin.if1001.rss.util.adapter.XmlFeedAdapter;
+import br.ufpe.cin.if1001.rss.domain.ItemRSS;
+import br.ufpe.cin.if1001.rss.util.ParserRSS;
 
 public class MainActivity extends Activity {
     // Deixou de ser constante pois agora pode ser modificado nas configurações

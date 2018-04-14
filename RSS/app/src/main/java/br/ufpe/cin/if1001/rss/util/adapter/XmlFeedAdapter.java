@@ -1,4 +1,4 @@
-package br.ufpe.cin.if1001.rss;
+package br.ufpe.cin.if1001.rss.util.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import br.ufpe.cin.if1001.rss.R;
+import br.ufpe.cin.if1001.rss.domain.ItemRSS;
 
 public class XmlFeedAdapter extends BaseAdapter {
     private Context context;

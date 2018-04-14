@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.ufpe.cin.if1001.rss.PreferenciasActivity"
-    class="br.ufpe.cin.if1001.rss.PreferenciasActivity$RssPreferenceFragment">
+    tools:context="br.ufpe.cin.if1001.rss.ui.PreferenciasActivity"
+    class="br.ufpe.cin.if1001.rss.ui.PreferenciasActivity$RssPreferenceFragment">
 </fragment>
