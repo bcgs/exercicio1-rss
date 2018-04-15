@@ -55,6 +55,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = SQLiteRSSHelper.getInstance(this);
+
         conteudoRSS = findViewById(R.id.items);
 
         SimpleCursorAdapter adapter =
@@ -79,7 +81,7 @@ public class MainActivity extends Activity {
         // permite filtrar conteudo pelo teclado virtual
         conteudoRSS.setTextFilterEnabled(true);
 
-        //Complete a implementação deste método de forma que ao clicar, o link seja aberto no navegador e
+        // Complete a implementação deste método de forma que ao clicar, o link seja aberto no navegador e
         // a notícia seja marcada como lida no banco
         conteudoRSS.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -96,7 +98,7 @@ public class MainActivity extends Activity {
         // Sempre atualizando a ListView através do link disponibilizado
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String rss_feed = prefs.getString(RSSFEED_KEY, getString(R.string.rss_feed_default));
-        new CarregaRSStask().execute(rss_feed);
+        new CarregaRSS().execute(rss_feed);
     }
 
     @Override
@@ -119,7 +121,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    class CarregaRSStask extends AsyncTask<String, Void, Boolean> {
+    class CarregaRSS extends AsyncTask<String, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(String... feeds) {
@@ -129,17 +131,14 @@ public class MainActivity extends Activity {
                 String feed = getRssFeed(feeds[0]);
                 items = ParserRSS.parse(feed);
                 for (ItemRSS i : items) {
-                    Log.d("DB", "Buscando no Banco por link: " + i.getLink());
+                    Log.d("DB", "Buscando no bd por link: " + i.getLink());
                     ItemRSS item = db.getItemRSS(i.getLink());
                     if (item == null) {
                         Log.d("DB", "Encontrado pela primeira vez: " + i.getTitle());
                         db.insertItem(i);
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                flag_problema = true;
-            } catch (XmlPullParserException e) {
+            } catch (IOException | XmlPullParserException e) {
                 e.printStackTrace();
                 flag_problema = true;
             }

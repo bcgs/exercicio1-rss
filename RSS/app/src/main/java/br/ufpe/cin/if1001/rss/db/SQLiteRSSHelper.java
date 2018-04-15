@@ -1,5 +1,6 @@
 package br.ufpe.cin.if1001.rss.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -29,12 +30,12 @@ public class SQLiteRSSHelper extends SQLiteOpenHelper {
         return db;
     }
 
-    public static final String ITEM_ROWID = "_ID";
-    public static final String ITEM_TITLE = "TITLE";
-    public static final String ITEM_DATE = "DATE";
-    public static final String ITEM_DESC = "DESCRIPTION";
-    public static final String ITEM_LINK = "LINK";
-    public static final String ITEM_UNREAD = "UNREAD";
+    public static final String ITEM_ROWID = "_id";
+    public static final String ITEM_TITLE = "title";
+    public static final String ITEM_DATE = "date";
+    public static final String ITEM_DESC = "description";
+    public static final String ITEM_LINK = "link";
+    public static final String ITEM_UNREAD = "unread";
 
     public final static String[] COLUMNS = {
             ITEM_ROWID, ITEM_TITLE, ITEM_DATE,
@@ -61,23 +62,89 @@ public class SQLiteRSSHelper extends SQLiteOpenHelper {
 
     //IMPLEMENTAR ABAIXO
     //Implemente a manipulação de dados nos métodos auxiliares para não ficar criando consultas manualmente
-    public long insertItem(ItemRSS item) {
-        return insertItem(item.getTitle(),item.getPubDate(),item.getDescription(),item.getLink());
+    public void insertItem(ItemRSS item) {
+        insertItem(item.getTitle(), item.getPubDate(), item.getDescription(), item.getLink());
     }
-    public long insertItem(String title, String pubDate, String description, String link) {
-        return (long) 0.0;
+
+    private void insertItem(String title, String pubDate, String description, String link) {
+        ContentValues values = new ContentValues();
+        values.put(ITEM_TITLE, title);
+        values.put(ITEM_DATE, pubDate);
+        values.put(ITEM_DESC, description);
+        values.put(ITEM_LINK, link);
+        values.put(ITEM_UNREAD, true);
+
+        db.getWritableDatabase().insert(
+                DB_TABLE,
+                null,
+                values
+        );
     }
+
     public ItemRSS getItemRSS(String link) throws SQLException {
-        return new ItemRSS("FALTA IMPLEMENTAR","FALTA IMPLEMENTAR","2018-04-09","FALTA IMPLEMENTAR");
+        String selection = ITEM_LINK + " = ?";
+        String[] selectionArgs = { link };
+        String[] columns = { ITEM_TITLE, ITEM_DESC };
+
+        Cursor cursor = db.getReadableDatabase().query(
+                DB_TABLE,
+                columns,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            return new ItemRSS(
+                    cursor.getString(cursor.getColumnIndex(ITEM_TITLE)),
+                    link,
+                    "2018-04-09",
+                    cursor.getString(cursor.getColumnIndex(ITEM_DESC))
+            );
+        } else return null;
     }
+
     public Cursor getItems() throws SQLException {
-        return null;
+        String selection = ITEM_UNREAD + " = ?";
+        String[] selectionArgs = { "1" };
+        return db.getReadableDatabase().query(
+                DB_TABLE,
+                COLUMNS,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
     }
+
     public boolean markAsUnread(String link) {
-        return false;
+        ContentValues values = new ContentValues();
+        values.put(ITEM_UNREAD, true);
+
+        String where = ITEM_LINK + " = ?";
+        String[] whereArgs = { link };
+        return db.getWritableDatabase().update(
+                DB_TABLE,
+                values,
+                where,
+                whereArgs
+        ) != 0;
     }
 
     public boolean markAsRead(String link) {
-        return false;
+        ContentValues values = new ContentValues();
+        values.put(ITEM_UNREAD, false);
+
+        String where = ITEM_LINK + " = ?";
+        String[] whereArgs = { link };
+        return db.getWritableDatabase().update(
+                DB_TABLE,
+                values,
+                where,
+                whereArgs
+        ) != 0;
     }
 }
