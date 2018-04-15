@@ -22,6 +22,15 @@
         <service
             android:name=".service.DownloadService"
             android:exported="false" />
+
+        <receiver
+            android:name=".util.UpdateReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="rss.update.available" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
