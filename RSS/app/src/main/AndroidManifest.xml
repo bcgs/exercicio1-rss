@@ -17,7 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.PreferenciasActivity"></activity>
+        <activity android:name=".ui.PreferenciasActivity" />
+
+        <service
+            android:name=".service.DownloadService"
+            android:exported="false" />
     </application>
 
 </manifest>
