@@ -24,7 +24,6 @@ import android.widget.Toast;
 import br.ufpe.cin.if1001.rss.R;
 import br.ufpe.cin.if1001.rss.db.SQLiteRSSHelper;
 import br.ufpe.cin.if1001.rss.service.DownloadService;
-import br.ufpe.cin.if1001.rss.util.adapter.XmlFeedAdapter;
 
 public class MainActivity extends Activity {
     // Chave utilizada no SharedPreferences
@@ -40,9 +39,6 @@ public class MainActivity extends Activity {
 
     //use ListView ao invés de TextView - deixe o atributo com o mesmo nome
     private ListView conteudoRSS;
-
-    // Adapter customizado
-    private XmlFeedAdapter adapter;
 
     private SQLiteRSSHelper db;
 
@@ -139,6 +135,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Notificar que o banco foi atualizado
     private BroadcastReceiver onDownloadCompleteEvent = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

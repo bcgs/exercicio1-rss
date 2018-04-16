@@ -42,6 +42,7 @@ public class DownloadService extends IntentService {
             e.printStackTrace();
         }
 
+        // Avisar que o download terminou
         LocalBroadcastManager
                 .getInstance(this)
                 .sendBroadcast(new Intent(MainActivity.DOWNLOAD_COMPLETE));
