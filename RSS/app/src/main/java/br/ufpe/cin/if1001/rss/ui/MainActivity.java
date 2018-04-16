@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
     // Chave utilizada no SharedPreferences
     public static final String RSSFEED_KEY = "rssfeed";
     public static final String DOWNLOAD_COMPLETE = "downloadcomplete";
+    public static final String UPDATE_INTERVAL_KEY = "updateinterval";
 
     //OUTROS LINKS PARA TESTAR...
     //http://rss.cnn.com/rss/edition.rss
@@ -98,7 +99,6 @@ public class MainActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String rss_feed = prefs.getString(RSSFEED_KEY, getString(R.string.rss_feed_default));
 
-        // TODO: call service
         Intent iService = new Intent(getApplicationContext(), DownloadService.class);
         iService.putExtra(RSSFEED_KEY, rss_feed);
         startService(iService);

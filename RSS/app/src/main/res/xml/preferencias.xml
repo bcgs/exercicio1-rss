@@ -11,4 +11,12 @@
         android:positiveButtonText="Alterar"
         android:negativeButtonText="Cancelar"
         android:defaultValue="@string/rss_feed_default" />
+
+    <ListPreference
+        android:key="updateinterval"
+        android:title="Atualização do feed"
+        android:entries="@array/periodic"
+        android:entryValues="@array/periodic"
+        android:defaultValue="30min" />
+
 </PreferenceScreen>

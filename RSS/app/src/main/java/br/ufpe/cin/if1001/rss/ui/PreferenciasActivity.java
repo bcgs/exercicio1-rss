@@ -7,7 +7,6 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import br.ufpe.cin.if1001.rss.R;
-import br.ufpe.cin.if1001.rss.ui.MainActivity;
 
 public class PreferenciasActivity extends Activity {
 
@@ -18,7 +17,7 @@ public class PreferenciasActivity extends Activity {
     }
 
     public static class RssPreferenceFragment extends PreferenceFragment {
-        Preference pref;
+        Preference pref1, pref2;
         SharedPreferences.OnSharedPreferenceChangeListener mListener;
 
         @Override
@@ -29,13 +28,17 @@ public class PreferenciasActivity extends Activity {
             addPreferencesFromResource(R.xml.preferencias);
 
             // Obtém valor atual de rss_feed
-            pref = getPreferenceManager().findPreference(MainActivity.RSSFEED_KEY);
+            pref1 = getPreferenceManager().findPreference(MainActivity.RSSFEED_KEY);
+            pref2 = getPreferenceManager().findPreference(MainActivity.UPDATE_INTERVAL_KEY);
 
             // Listener para atualizar o summary após modificar a URL do feed
             mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    pref.setSummary(sharedPreferences.getString(key,MainActivity.RSSFEED_KEY));
+                    if (key.equals(MainActivity.RSSFEED_KEY))
+                        pref1.setSummary(sharedPreferences.getString(key, MainActivity.RSSFEED_KEY));
+                    else if (key.equals(MainActivity.UPDATE_INTERVAL_KEY))
+                        pref2.setSummary(sharedPreferences.getString(key, MainActivity.UPDATE_INTERVAL_KEY));
                 }
             };
 
@@ -47,6 +50,7 @@ public class PreferenciasActivity extends Activity {
 
             // Força chamada ao método de callback para exibir link atual
             mListener.onSharedPreferenceChanged(prefs, MainActivity.RSSFEED_KEY);
+            mListener.onSharedPreferenceChanged(prefs, MainActivity.UPDATE_INTERVAL_KEY);
         }
     }
 }
