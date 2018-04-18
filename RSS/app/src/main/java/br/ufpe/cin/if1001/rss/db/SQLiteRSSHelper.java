@@ -30,12 +30,12 @@ public class SQLiteRSSHelper extends SQLiteOpenHelper {
         return db;
     }
 
-    public static final String ITEM_ROWID = "_id";
-    public static final String ITEM_TITLE = "title";
-    public static final String ITEM_DATE = "date";
-    public static final String ITEM_DESC = "description";
-    public static final String ITEM_LINK = "link";
-    public static final String ITEM_UNREAD = "unread";
+    public static final String ITEM_ROWID = RssProviderContract._ID;
+    public static final String ITEM_TITLE = RssProviderContract.TITLE;
+    public static final String ITEM_DATE = RssProviderContract.DATE;
+    public static final String ITEM_DESC = RssProviderContract.DESCRIPTION;
+    public static final String ITEM_LINK = RssProviderContract.LINK;
+    public static final String ITEM_UNREAD = RssProviderContract.UNREAD;
 
     public final static String[] COLUMNS = {
             ITEM_ROWID, ITEM_TITLE, ITEM_DATE,
