@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,13 +41,8 @@ public class MainActivity extends Activity {
     //http://pox.globo.com/rss/g1/ciencia-e-saude/
     //http://pox.globo.com/rss/g1/tecnologia/
 
-    //use ListView ao invés de TextView - deixe o atributo com o mesmo nome
-    private ListView conteudoRSS;
-
     private SQLiteRSSHelper db;
 
-    /** RecyclerView */
-    private RecyclerView recyclerView;
     private static SortedList<ItemRSS> itemList;
 
     private ItemRSSAdapter adapter;
@@ -60,9 +54,7 @@ public class MainActivity extends Activity {
 
         db = SQLiteRSSHelper.getInstance(this);
 
-        conteudoRSS = findViewById(R.id.items);
-
-        recyclerView = new RecyclerView(this);
+        RecyclerView recyclerView = new RecyclerView(this);
         recyclerView.hasFixedSize();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -236,7 +228,7 @@ public class MainActivity extends Activity {
         TextView title, date;
         SQLiteRSSHelper db;
 
-        public CardChangeHolder(View itemView) {
+        private CardChangeHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.item_titulo);
             date = itemView.findViewById(R.id.item_data);
