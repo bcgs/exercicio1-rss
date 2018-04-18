@@ -13,6 +13,9 @@ Para entregar o exercício, responda o [formulário de entrega](https://docs.goo
   7. Faça com que, ao clicar em um título, o usuário seja direcionado para o navegador. Opcionalmente, pode abrir em uma nova activity com `WebView`.
   8. Modifique a aplicação para que passe a carregar o endereço do feed a partir de uma `SharedPreferences` com a chave `rssfeed`. O endereço padrão para o feed está disponível em res/values/strings.xml.
   9. Inclua a possibilidade de alterar a `SharedPreference` (`rssfeed`) incluindo um botão na `ActionBar` da aplicação. Ao clicar no botão, abra `PreferenciasActivity`, que deve exibir uma `PreferenceScreen` gerada automaticamente por meio de um `Fragment` que estende a classe `PreferenceFragment`, como visto em sala. Use o arquivo em `res/xml/preferencias.xml` para definir a tela.
+
+  # Tarefa #2 - RSS
+
   10. A classe `SQLiteRSSHelper` já tem toda a configuração do banco. No entanto, ainda é necessário implementar os métodos de manipulação do banco de dados (da linha 73 em diante), que estão em aberto ainda. A implementação do método `getItems` deve retornar apenas os itens não lidos;
   11. Complete a implementação do método `onItemClick` (linha 74 em diante de `MainActivity`), de forma que ao clicar, o link seja aberto no navegador e a notícia seja marcada como lida no banco;
   12. Altere a aplicação de forma a usar um `Service` para fazer o download e persistência dos itens do feed no banco. Ou seja, a ideia aqui é mover o código que atualmente está no `AsyncTask` que carrega o feed a partir da internet para um `Service`. Dica: use `IntentService`;
@@ -51,4 +54,4 @@ Para entregar o exercício, responda o [formulário de entrega](https://docs.goo
 | 14 | **sim** |
 | 15 | **sim** |
 | 16 | **sim** |
-| 17 | **não** |
+| 17 | **sim** |
