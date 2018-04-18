@@ -12,17 +12,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.preference.PreferenceManager;
+import android.support.v7.util.SortedList;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
+import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import br.ufpe.cin.if1001.rss.R;
 import br.ufpe.cin.if1001.rss.db.SQLiteRSSHelper;
+import br.ufpe.cin.if1001.rss.domain.ItemRSS;
 import br.ufpe.cin.if1001.rss.service.DownloadService;
 
 public class MainActivity extends Activity {
@@ -42,6 +47,12 @@ public class MainActivity extends Activity {
 
     private SQLiteRSSHelper db;
 
+    /** RecyclerView */
+    private RecyclerView recyclerView;
+    private static SortedList<ItemRSS> itemList;
+
+    private ItemRSSAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,40 +62,15 @@ public class MainActivity extends Activity {
 
         conteudoRSS = findViewById(R.id.items);
 
-        SimpleCursorAdapter adapter =
-                new SimpleCursorAdapter(
-                        //contexto, como estamos acostumados
-                        this,
-                        //Layout XML de como se parecem os itens da lista
-                        R.layout.itemlista,
-                        //Objeto do tipo Cursor, com os dados retornados do banco.
-                        //Como ainda não fizemos nenhuma consulta, está nulo.
-                        null,
-                        //Mapeamento das colunas nos IDs do XML.
-                        // Os dois arrays a seguir devem ter o mesmo tamanho
-                        new String[]{SQLiteRSSHelper.ITEM_TITLE, SQLiteRSSHelper.ITEM_DATE},
-                        new int[]{R.id.item_titulo, R.id.item_data},
-                        //Flags para determinar comportamento do adapter, pode deixar 0.
-                        0
-                );
-        //Seta o adapter. Como o Cursor é null, ainda não aparece nada na tela.
-        conteudoRSS.setAdapter(adapter);
+        recyclerView = new RecyclerView(this);
+        recyclerView.hasFixedSize();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // permite filtrar conteudo pelo teclado virtual
-        conteudoRSS.setTextFilterEnabled(true);
+        itemList = new SortedList<>(ItemRSS.class, callbackMethods);
+        adapter = new ItemRSSAdapter(itemList);
+        recyclerView.setAdapter(adapter);
 
-        // Complete a implementação deste método de forma que ao clicar, o link seja aberto no navegador e
-        // a notícia seja marcada como lida no banco
-        conteudoRSS.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SimpleCursorAdapter adapter = (SimpleCursorAdapter) parent.getAdapter();
-                Cursor mCursor = ((Cursor) adapter.getItem(position));
-                String link = mCursor.getString(mCursor.getColumnIndex(SQLiteRSSHelper.ITEM_LINK));
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-                startActivity(intent);
-                db.markAsRead(link);
-            }
-        });
+        setContentView(recyclerView);
     }
 
     @Override
@@ -135,7 +121,6 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Notificar que o banco foi atualizado
     private BroadcastReceiver onDownloadCompleteEvent = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -144,20 +129,137 @@ public class MainActivity extends Activity {
         }
     };
 
-    class ExibirFeed extends AsyncTask<Void, Void, Cursor> {
+    class ExibirFeed extends AsyncTask<Void, Void, ArrayList<ItemRSS>> {
 
         @Override
-        protected Cursor doInBackground(Void... voids) {
+        protected ArrayList<ItemRSS> doInBackground(Void... voids) {
             Cursor c = db.getItems();
             c.getCount();
-            return c;
+            ArrayList<ItemRSS> newList = new ArrayList<>();
+
+            // Popular newList com conteúdo do Cursor
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                String title = c.getString(c.getColumnIndex(SQLiteRSSHelper.ITEM_TITLE));
+                String link = c.getString(c.getColumnIndex(SQLiteRSSHelper.ITEM_LINK));
+                String date = c.getString(c.getColumnIndex(SQLiteRSSHelper.ITEM_DATE));
+                String description = c.getString(c.getColumnIndex(SQLiteRSSHelper.ITEM_DESC));
+
+                newList.add(new ItemRSS(title, link, date, description));
+            }
+            c.close();
+            return newList;
         }
 
         @Override
-        protected void onPostExecute(Cursor c) {
-            if (c != null) {
-                ((CursorAdapter) conteudoRSS.getAdapter()).changeCursor(c);
+        protected void onPostExecute(ArrayList<ItemRSS> newList) {
+            adapter.swap(newList);  // Exibir lista
+        }
+    }
+
+    /** Responsável pelo comportamento da SortedList */
+    SortedList.Callback<ItemRSS> callbackMethods = new SortedList.Callback<ItemRSS>() {
+        @Override
+        public int compare(ItemRSS o1, ItemRSS o2) {
+            return o1.getPubDate().compareTo(o2.getPubDate());
+        }
+
+        @Override
+        public void onChanged(int position, int count) {
+            adapter.notifyItemRangeChanged(position, count);
+        }
+
+        @Override
+        public boolean areContentsTheSame(ItemRSS oldItem, ItemRSS newItem) {
+            return areItemsTheSame(oldItem, newItem);
+        }
+
+        @Override
+        public boolean areItemsTheSame(ItemRSS item1, ItemRSS item2) {
+            return compare(item1, item2) == 0;
+        }
+
+        @Override
+        public void onInserted(int position, int count) {
+            adapter.notifyItemRangeInserted(position, count);
+        }
+
+        @Override
+        public void onRemoved(int position, int count) {
+            adapter.notifyItemRangeRemoved(position, count);
+        }
+
+        @Override
+        public void onMoved(int fromPosition, int toPosition) {
+            adapter.notifyItemMoved(fromPosition, toPosition);
+        }
+    };
+
+    /** Adapter customizado para ItemRSS */
+    private class ItemRSSAdapter extends RecyclerView.Adapter<CardChangeHolder> {
+        private SortedList<ItemRSS> item;
+
+        ItemRSSAdapter(SortedList<ItemRSS> itemList) {
+            this.item = itemList;
+        }
+
+        @Override
+        public CardChangeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = getLayoutInflater().inflate(R.layout.itemlista, parent, false);
+            return new CardChangeHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(CardChangeHolder holder, int position) {
+            holder.bindModel(item.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return item.size();
+        }
+
+        /**
+         * Atualizar feed
+         * @param data Itens RSS a serem atualizados
+         */
+        public void swap(ArrayList<ItemRSS> data) {
+            if (data != null && data.size() > 0) {
+                item.clear();
+                item.addAll(data);
+                notifyDataSetChanged();
             }
         }
     }
+
+    /** ViewHolder para reciclagem de views */
+    class CardChangeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView title, date;
+        SQLiteRSSHelper db;
+
+        public CardChangeHolder(View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.item_titulo);
+            date = itemView.findViewById(R.id.item_data);
+            db = SQLiteRSSHelper.getInstance(itemView.getContext());
+
+            title.setOnClickListener(this);
+        }
+
+        void bindModel(ItemRSS item) {
+            title.setText(item.getTitle());
+            date.setText(item.getPubDate());
+        }
+
+        @Override
+        public void onClick(View v) {
+            int pos = getAdapterPosition();
+            ItemRSS item = MainActivity.itemList.get(pos);
+            String link = item.getLink();
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+            v.getContext().startActivity(intent);
+            db.markAsRead(link);
+        }
+    }
+
 }
+
