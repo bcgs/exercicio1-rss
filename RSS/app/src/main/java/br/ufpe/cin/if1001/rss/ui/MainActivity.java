@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -17,9 +16,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,6 +24,7 @@ import br.ufpe.cin.if1001.rss.R;
 import br.ufpe.cin.if1001.rss.db.SQLiteRSSHelper;
 import br.ufpe.cin.if1001.rss.domain.ItemRSS;
 import br.ufpe.cin.if1001.rss.service.DownloadService;
+import br.ufpe.cin.if1001.rss.ui.adapter.ItemRSSAdapter;
 
 public class MainActivity extends Activity {
     // Chave utilizada no SharedPreferences
@@ -43,7 +40,7 @@ public class MainActivity extends Activity {
 
     private SQLiteRSSHelper db;
 
-    private static SortedList<ItemRSS> itemList;
+    public static SortedList<ItemRSS> itemList;
 
     private ItemRSSAdapter adapter;
 
@@ -59,7 +56,7 @@ public class MainActivity extends Activity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         itemList = new SortedList<>(ItemRSS.class, callbackMethods);
-        adapter = new ItemRSSAdapter(itemList);
+        adapter = new ItemRSSAdapter(this, itemList);
         recyclerView.setAdapter(adapter);
 
         setContentView(recyclerView);
@@ -185,73 +182,4 @@ public class MainActivity extends Activity {
             adapter.notifyItemMoved(fromPosition, toPosition);
         }
     };
-
-    /** Adapter customizado para ItemRSS */
-    private class ItemRSSAdapter extends RecyclerView.Adapter<CardChangeHolder> {
-        private SortedList<ItemRSS> item;
-
-        ItemRSSAdapter(SortedList<ItemRSS> itemList) {
-            this.item = itemList;
-        }
-
-        @Override
-        public CardChangeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.itemlista, parent, false);
-            return new CardChangeHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(CardChangeHolder holder, int position) {
-            holder.bindModel(item.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return item.size();
-        }
-
-        /**
-         * Atualizar feed
-         * @param data Itens RSS a serem atualizados
-         */
-        public void swap(ArrayList<ItemRSS> data) {
-            if (data != null && data.size() > 0) {
-                item.clear();
-                item.addAll(data);
-                notifyDataSetChanged();
-            }
-        }
-    }
-
-    /** ViewHolder para reciclagem de views */
-    class CardChangeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, date;
-        SQLiteRSSHelper db;
-
-        private CardChangeHolder(View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.item_titulo);
-            date = itemView.findViewById(R.id.item_data);
-            db = SQLiteRSSHelper.getInstance(itemView.getContext());
-
-            title.setOnClickListener(this);
-        }
-
-        void bindModel(ItemRSS item) {
-            title.setText(item.getTitle());
-            date.setText(item.getPubDate());
-        }
-
-        @Override
-        public void onClick(View v) {
-            int pos = getAdapterPosition();
-            ItemRSS item = MainActivity.itemList.get(pos);
-            String link = item.getLink();
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-            v.getContext().startActivity(intent);
-            db.markAsRead(link);
-        }
-    }
-
 }
-
