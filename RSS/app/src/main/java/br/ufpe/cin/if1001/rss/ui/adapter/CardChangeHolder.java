@@ -29,6 +29,11 @@ public class CardChangeHolder extends RecyclerView.ViewHolder implements View.On
         date.setText(item.getPubDate());
     }
 
+    /**
+     * Ao clicar em um item o mesmo será aberto no navegador
+     * e marcado como lido no banco de dados.
+     * @param v Item RSS clicado.
+     */
     @Override
     public void onClick(View v) {
         int pos = getAdapterPosition();

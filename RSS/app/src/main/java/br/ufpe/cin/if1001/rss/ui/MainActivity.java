@@ -27,7 +27,6 @@ import br.ufpe.cin.if1001.rss.service.DownloadService;
 import br.ufpe.cin.if1001.rss.ui.adapter.ItemRSSAdapter;
 
 public class MainActivity extends Activity {
-    // Chave utilizada no SharedPreferences
     public static final String RSSFEED_KEY = "rssfeed";
     public static final String DOWNLOAD_COMPLETE = "downloadcomplete";
     public static final String UPDATE_INTERVAL_KEY = "updateinterval";
@@ -39,10 +38,8 @@ public class MainActivity extends Activity {
     //http://pox.globo.com/rss/g1/tecnologia/
 
     private SQLiteRSSHelper db;
-
-    public static SortedList<ItemRSS> itemList;
-
     private ItemRSSAdapter adapter;
+    public static SortedList<ItemRSS> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +62,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        // Sempre atualizando a ListView através do link disponibilizado
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String rss_feed = prefs.getString(RSSFEED_KEY, getString(R.string.rss_feed_default));
 
+        // Inicializa um Service para download do RSS
         Intent iService = new Intent(getApplicationContext(), DownloadService.class);
         iService.putExtra(RSSFEED_KEY, rss_feed);
         startService(iService);

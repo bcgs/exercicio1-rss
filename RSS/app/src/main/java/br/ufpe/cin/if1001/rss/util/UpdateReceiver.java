@@ -17,6 +17,7 @@ public class UpdateReceiver extends BroadcastReceiver {
         NotificationManager nManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // Chamar MainActivity ao clicar na notificação
         Intent nIntent = new Intent(context, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(context,0, nIntent,0);
 

@@ -49,9 +49,7 @@ public class ParserRSS {
         return items;
     }
 
-
     //Este metodo faz o parsing de RSS gerando objetos ItemRSS
-
     public static List<ItemRSS> parse(String rssFeed) throws XmlPullParserException, IOException {
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         XmlPullParser xpp = factory.newPullParser();
@@ -60,7 +58,7 @@ public class ParserRSS {
         return readRss(xpp);
     }
 
-    public static List<ItemRSS> readRss(XmlPullParser parser)
+    private static List<ItemRSS> readRss(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         List<ItemRSS> items = new ArrayList<ItemRSS>();
         parser.require(XmlPullParser.START_TAG, null, "rss");
@@ -78,7 +76,7 @@ public class ParserRSS {
         return items;
     }
 
-    public static List<ItemRSS> readChannel(XmlPullParser parser)
+    private static List<ItemRSS> readChannel(XmlPullParser parser)
             throws IOException, XmlPullParserException {
         List<ItemRSS> items = new ArrayList<ItemRSS>();
         parser.require(XmlPullParser.START_TAG, null, "channel");
@@ -96,7 +94,7 @@ public class ParserRSS {
         return items;
     }
 
-    public static ItemRSS readItem(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static ItemRSS readItem(XmlPullParser parser) throws XmlPullParserException, IOException {
         String title = null;
         String link = null;
         String pubDate = null;
@@ -124,7 +122,7 @@ public class ParserRSS {
     }
 
     // Processa tags de forma parametrizada no feed.
-    public static String readData(XmlPullParser parser, String tag)
+    private static String readData(XmlPullParser parser, String tag)
             throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, tag);
         String data = readText(parser);
@@ -132,7 +130,7 @@ public class ParserRSS {
         return data;
     }
 
-    public static String readText(XmlPullParser parser)
+    private static String readText(XmlPullParser parser)
             throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
@@ -142,7 +140,7 @@ public class ParserRSS {
         return result;
     }
 
-    public static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
         }
@@ -158,7 +156,4 @@ public class ParserRSS {
             }
         }
     }
-
-     /**/
-
 }

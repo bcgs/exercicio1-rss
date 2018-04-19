@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import br.ufpe.cin.if1001.rss.R;
 import br.ufpe.cin.if1001.rss.domain.ItemRSS;
 
-
 public class ItemRSSAdapter extends RecyclerView.Adapter<CardChangeHolder> {
     private Context context;
     private SortedList<ItemRSS> list;
