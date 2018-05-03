@@ -25,6 +25,13 @@ Para entregar o exercício, responda o [formulário de entrega](https://docs.goo
   16. Usando `SharedPreferences` e `PreferenceFragment`, defina um outro item na tela de configurações para estabelecer uma periodicidade para o carregamento de notícias, incluindo as seguintes possibilidades: 30 min / 1h / 3h / 6h / 12h / 24h (tem que adicionar outra preference no XML). Por enquanto basta apenas salvar a preferência do usuário, não estamos de fato agendando a tarefa ainda;
   17. *OPCIONAL* Faça com que a aplicação passe a usar um `RecyclerView`, ao invés de `ListView`. Sugestão: Use `SortedList` para ordenar itens cronologicamente (do mais recente para o mais antigo).
 
+  # Tarefa #3 - RSS 
+
+  18. A partir da `SharedPreferences` definida para estabelecer uma periodicidade para o carregamento de notícias, agende uma tarefa periódica por meio de `JobScheduler` para download das notícias do feed. A tarefa só deve ser executada se houver conectividade;
+  19. Implemente um `ContentProvider` na classe `RssProvider` (disponibilizada no repositório), para realizar a manipulação do banco de dados, implementando todos os métodos de acesso e manipulação do banco;
+  20. Defina uma permissão de acesso a este `RssProvider`, nomeada `br.ufpe.cin.if1001.rss.leitura`;
+  21. Crie uma aplicação à parte, que acessa os dados de `RssProvider` e exibe em uma `ListView`. Esta nova aplicação *não deve ter permissão* de acessar a Internet.
+
 ---
 
 # Orientações
@@ -55,3 +62,7 @@ Para entregar o exercício, responda o [formulário de entrega](https://docs.goo
 | 15 | **sim** |
 | 16 | **sim** |
 | 17 | **sim** |
+| 18 | **não** |
+| 19 | **não** |
+| 20 | **não** |
+| 21 | **não** |
